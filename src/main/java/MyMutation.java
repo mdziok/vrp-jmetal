@@ -96,13 +96,21 @@ public class MyMutation implements MutationOperator<MyVRPSolution> {
                 Integer tmp1 = solution.getVariableValue(solution.getNumberOfCities() + pos1);
                 Integer tmp2 = solution.getVariableValue(solution.getNumberOfCities() + pos2);
 
-                if (tmp1 != 0 && tmp2 != 0) {
-                    tmp1 += 1;
-                    tmp2 -= 1;
+
+                if (tmp1 > tmp2) {
+                    int swap = tmp1;
+                    tmp1 = tmp2;
+                    tmp2 = swap;
+                }
+
+                if (tmp2 > 0) {
+                    int diff = positionRandomGenerator.getRandomValue(0, Math.max(tmp1, tmp2));
+
+                    tmp1 += diff;
+                    tmp2 -= diff;
                     solution.setVariableValue(pos1 + solution.getNumberOfCities(), tmp1);
                     solution.setVariableValue(pos2 + solution.getNumberOfCities(), tmp2);
                 }
-
             }
         }
 

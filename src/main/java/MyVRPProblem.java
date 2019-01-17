@@ -9,6 +9,8 @@ public class MyVRPProblem extends AbstractGenericProblem<MyVRPSolution>{
     private double[][] distMatrix;
     private BaseType baseType;
 
+    private int maxDriverPath = 5000;
+
     public MyVRPProblem(int numberOfCities, int numberOfVehicles){
         setNumberOfVariables(numberOfCities + numberOfVehicles);
         setNumberOfObjectives(2);
@@ -40,21 +42,29 @@ public class MyVRPProblem extends AbstractGenericProblem<MyVRPSolution>{
         int fitness1 = 0;       //sum of distances
         int fitness2 = 0;       //number of vehicles
 
+        int driverPathLength ;
+
         for (int i = getNumberOfCities(); i < getNumberOfVariables(); i++){  // iteration over vehicles
+            driverPathLength = 0;
             if (solution.getVariableValue(i) > 0) { // if vehicle visit some cities...
-                fitness2++; // fitness2 - number of vehicles
-                fitness1 += distMatrix[solution.getVariableValue(cityN)][getNumberOfCities()]; // from base to first city
+//                fitness2++; // fitness2 - number of vehicles
+                driverPathLength += distMatrix[solution.getVariableValue(cityN)][getNumberOfCities()]; // from base to first city
                 for (int j = 0; j < solution.getVariableValue(i)-1; j++) {
                     int x ;
                     int y ;
                     x = solution.getVariableValue(cityN) ;
                     y = solution.getVariableValue(cityN+1) ;
 
-                    fitness1 += distMatrix[x][y];
+                    driverPathLength += distMatrix[x][y];
                     cityN++;
                 }
-                fitness1 += distMatrix[solution.getVariableValue(cityN)][getNumberOfCities()]; // from last city to base
+                driverPathLength += distMatrix[solution.getVariableValue(cityN)][getNumberOfCities()]; // from last city to base
                 cityN++;
+            }
+
+            fitness1 += driverPathLength;
+            if (driverPathLength > maxDriverPath) {
+                fitness2 += (driverPathLength - maxDriverPath);
             }
         }
 

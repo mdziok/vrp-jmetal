@@ -109,6 +109,27 @@ public class MyRunner extends AbstractAlgorithmRunner {
             double fitness1 = population.get(0).getObjective(0);
             double fitness2 = population.get(0).getObjective(1);
 
+            int numberOfVehicles = population.get(0).getNumberOfVehicles();
+            int numberOfCities = population.get(0).getNumberOfCities();
+
+            int maxVehicles = 0;
+            int minVehicles = numberOfVehicles;
+
+            for (MyVRPSolution solution : population){
+                int count = 0;
+                for (int j = numberOfCities; j < numberOfVehicles + numberOfCities; j++){
+                    if (solution.getVariableValue(j) > 0){
+                        count ++;
+                    }
+                }
+                if (count < minVehicles){
+                    minVehicles = count;
+                }
+                if (count > maxVehicles) {
+                    maxVehicles = count;
+                }
+            }
+
             new SolutionListOutput(population)
                     .setSeparator("\t")
                     .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
@@ -116,8 +137,8 @@ public class MyRunner extends AbstractAlgorithmRunner {
                     .print();
 
             JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
-            JMetalLogger.logger.info(String.format("Fitness: %f, %f", fitness1, fitness2));
-            writer.write(algorithm.getName(), baseType, filePath, populationSize, maxEvaluations, crossoverProbability, mutationProbability, fitness1, fitness2, computingTime);
+            JMetalLogger.logger.info(String.format("Fitness: %f, %f, Vehicles: %d, %d", fitness1, fitness2, minVehicles, maxVehicles));
+            writer.write(algorithm.getName(), baseType, filePath, populationSize, maxEvaluations, crossoverProbability, mutationProbability, fitness1, fitness2, computingTime, minVehicles);
         }
     }
 }
